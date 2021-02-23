@@ -31,7 +31,7 @@ namespace testSplashScreen
             {
                 this.pictureBox1.Load(imgPath);
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 imgPath = @"..\..\Resources\splash_window.png";
                 this.pictureBox1.Load(imgPath);
