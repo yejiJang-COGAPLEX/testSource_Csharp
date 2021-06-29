@@ -15,47 +15,53 @@ namespace testSplashScreen
     public partial class SplashScreen : Form
     {
         private string imgPath;
-        private int loadTime;
+
         public SplashScreen()
         {
             InitializeComponent();
         }
-        public SplashScreen(string imgName, int loadTime)
+
+        public SplashScreen(string imgName)
         {
+            
             imgPath = @"..\..\Resources\" + imgName;
-            this.loadTime = loadTime;
             InitializeComponent();
+
             this.pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-
-            try
+            if (!File.Exists(imgPath))
             {
+                Console.WriteLine("File Not Found.");
+            }
+            else 
+            {
+                Image img = Image.FromFile(imgPath);
+                int width = img.Width;
+                int height = img.Height;
+                this.pictureBox1.Size = new Size(width, height);
+                this.Size = new Size(width, height);
                 this.pictureBox1.Load(imgPath);
             }
-            catch (FileNotFoundException)
-            {
-                imgPath = @"..\..\Resources\splash_window.png";
-                this.pictureBox1.Load(imgPath);
-                Console.WriteLine("Error : File Not Found");
-            }
-            finally
-            {
-                Console.WriteLine("Show Splash Screen");
-                this.Show();
-            }
-        }
-        public async Task loadPicture()
-        {
-            Console.WriteLine("SplashScreen Sleep {0} seconds..", (float)loadTime / 1000);
-            Console.WriteLine("Initialize load...");
-            Thread.Sleep(this.loadTime);
+            this.Show();
         }
 
-        public void closePicture(Task splashScreen)
+        public SplashScreen(Image img) 
         {
-            Console.WriteLine("Initialize Complete");
-            splashScreen.Wait();    //호출한 스레드 작업이 완료 될 때까지 대기
-            this.Close(); //splash screen close
-            Console.WriteLine("SplashScreen Closed and Show Main1");
+            InitializeComponent();
+            int width = img.Width;
+            int height = img.Height;
+            this.pictureBox1.Size = new Size(width, height);
+            this.Size = new Size(width, height);
+            this.pictureBox1.Image = img;
+        }
+
+        public Task ShowScreen(int loadTime)
+        {
+            this.Show();
+            return Task.Run(async() => 
+            {
+                await Task.Delay(loadTime);
+                this.Close(); //splash screen close
+            });
         }
     }
 }
